@@ -34,4 +34,6 @@ public class QuestManager : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+
 }
