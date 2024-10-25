@@ -44,7 +44,28 @@ public class ObjectPool : MonoBehaviour
             return null;
         }
 
-        GameObject curObj = pool[key].Dequeue();
+        GameObject curObj;
+
+        // 부족할 경우 더 채워준다!
+        if (pool[key].Count == 0)
+        {
+            // 해당 키의 ObjectCase를 찾아서 새로운 객체를 생성
+            ObjectCase objectCase = Array.Find(objectCases, oc => oc.GO.name == key);
+            if (objectCase != null)
+            {
+                curObj = Instantiate(objectCase.GO);
+                curObj.name = objectCase.GO.name;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {
+            curObj = pool[key].Dequeue();
+        }
+
         curObj.SetActive(true);
         return curObj;
     }
@@ -59,5 +80,22 @@ public class ObjectPool : MonoBehaviour
 
         obj.SetActive(false);
         pool[obj.name].Enqueue(obj);
+    }
+
+    public void GetRNBtn()
+    {
+        int randomNum = UnityEngine.Random.Range(0, objectCases.Length);
+        string randomName = objectCases[randomNum].GO.name;
+        Get(randomName);
+    }
+
+    public void ReleaseRNBtn()
+    {
+        int randomNum = UnityEngine.Random.Range(0, objectCases.Length);
+        string randomName = objectCases[randomNum].GO.name;
+        GameObject randomGO = GameObject.Find(randomName);
+
+        if (randomGO == null) return;
+        Release(randomGO);
     }
 }
